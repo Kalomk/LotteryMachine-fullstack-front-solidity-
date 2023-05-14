@@ -6,12 +6,14 @@ import { contractAddresses, abi } from "../../constants"
 import LotteryMachine from "../LotteryMachine/LotteryMachine"
 import lotteryMachineBg from '../../assets/img/backgrounds/draw_machine.png'
 import { ethers } from "ethers"
+import WinnerModal from "../WinnerModal/WinnerModal"
 
 
 export enum StateOfSlider {
     INSERT_COIN ='insert',
     WAIT_PLAYERS ='wait-players',
     WAIT_TRANSACTION='wait-transaction',
+    WAIT_START_A_GAME = 'wait-start',
     WAIT_A_WINNER ='wait-a-winner',
     PICK_A_WINNER='winner-picked',
 }
@@ -19,6 +21,7 @@ export enum StateOfSlider {
 
 const EnterTheLottery = () => {
     const [isShakeMachine,setIsShakeMachine] = useState(false)
+    const [modalIsOpen,setModalIsOpen] = useState(false)
     const lotteryMachineRef = useRef<any>(null)
     const {isWeb3Enabled, chainId: chainIdHex,Moralis } = useMoralis()
     const chainId = parseInt(chainIdHex!)
@@ -42,6 +45,7 @@ const listenEventWinner = async  () => {
         stopAnimateBalls()
         setIsShakeMachine(false)
         setSliderState(StateOfSlider.PICK_A_WINNER)
+        setModalIsOpen(true)
             })
               
     }
@@ -146,7 +150,7 @@ const listenEventRaffleStart = async  () => {
             updateUIValues()
             handleNewNotification()
             setSliderState( +numberOfPlayers > 1 ?
-                StateOfSlider.WAIT_TRANSACTION:
+                StateOfSlider.WAIT_START_A_GAME:
                 StateOfSlider.WAIT_PLAYERS
                 )
         } catch (error) {
@@ -180,6 +184,7 @@ const listenEventRaffleStart = async  () => {
          <LotteryMachine ref={lotteryMachineRef}  width={605} height ={330} ballsCount={numberOfPlayers}/>
         </div>
       </main>
+      <WinnerModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
     </>
   )
 

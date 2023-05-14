@@ -47,6 +47,9 @@ const StateSlider: React.FC<StateSliderProps> = ({
         case StateOfSlider.PICK_A_WINNER:
             slider.current.slickGoTo(4);
             break
+        case StateOfSlider.PICK_A_WINNER:
+            slider.current.slickGoTo(5);
+            break    
     }
   }
 
@@ -85,6 +88,11 @@ const StateSlider: React.FC<StateSliderProps> = ({
         <div className='slide05'>
         <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
             <h3 className='animate-blinking text-[32px] text-center font-bold'>Winner picked!!!</h3> 
+            </div>
+        </div>
+        <div className='slide06'>
+        <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
+            <h3 className='animate-blinking text-[32px] text-center font-bold'>Wait start a game!</h3> 
             </div>
         </div>
       </Slider>
