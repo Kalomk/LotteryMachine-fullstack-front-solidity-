@@ -47,7 +47,7 @@ const StateSlider: React.FC<StateSliderProps> = ({
         case StateOfSlider.PICK_A_WINNER:
             slider.current.slickGoTo(4);
             break
-        case StateOfSlider.PICK_A_WINNER:
+        case StateOfSlider.WAIT_START_A_GAME:
             slider.current.slickGoTo(5);
             break    
     }
