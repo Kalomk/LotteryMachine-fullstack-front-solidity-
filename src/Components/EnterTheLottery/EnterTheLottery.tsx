@@ -7,42 +7,67 @@ import LotteryMachine from "../LotteryMachine/LotteryMachine"
 import lotteryMachineBg from '../../assets/img/backgrounds/draw_machine.png'
 import { ethers } from "ethers"
 
+
+export enum StateOfSlider {
+    INSERT_COIN ='insert',
+    WAIT_PLAYERS ='wait-players',
+    WAIT_TRANSACTION='wait-transaction',
+    WAIT_A_WINNER ='wait-a-winner',
+    PICK_A_WINNER='winner-picked',
+}
+
+
 const EnterTheLottery = () => {
     const [isShakeMachine,setIsShakeMachine] = useState(false)
-    const [transactionWait,setTransactionWait] = useState(false)
-    const [winnerEmited,setWinnerEmited] = useState(false)
     const lotteryMachineRef = useRef<any>(null)
-    const [insertCoin,setInsertCoin] = useState(false)
-    const [waitWinner,setWaitWinner] = useState(false)
-    const {isWeb3Enabled, chainId: chainIdHex } = useMoralis()
+    const {isWeb3Enabled, chainId: chainIdHex,Moralis } = useMoralis()
     const chainId = parseInt(chainIdHex!)
     const raffleAddress = chainId in contractAddresses ? contractAddresses[chainId as unknown as keyof typeof contractAddresses][0] : null
+    const [sliderState,setSliderState] = useState<StateOfSlider>(StateOfSlider.INSERT_COIN)
 
+    //contract variables
     const [entranceFee, setEntranceFee] = useState("0")
     const [numberOfPlayers, setNumberOfPlayers] = useState("0")
     const [recentWinner, setRecentWinner] = useState("0")
 
+//Event Listeners
+const listenEventWinner = async  () => {
+    const provider = new ethers.BrowserProvider(window?.ethereum)
+    const signer = await provider.getSigner()
+    const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
 
-    const listenEventWinner = async  () => {
-            const provider = new ethers.BrowserProvider(window?.ethereum)
-            const signer = await provider.getSigner()
-            const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
-
-            contract.on('WinnerPicked', () =>{
-                console.log('done!')
-                updateUIValues()
-                lotteryMachineRef.current.stopShaking()
-                setIsShakeMachine(false)
-                setWinnerEmited(true)
+    contract.on('WinnerPicked', () =>{
+        console.log('Winner Picked!')
+        updateUIValues()
+        stopAnimateBalls()
+        setIsShakeMachine(false)
+        setSliderState(StateOfSlider.PICK_A_WINNER)
             })
               
     }
 
-    const dispatch:any = useNotification()
+const listenEventRaffleStart = async  () => {
+        const provider = new ethers.BrowserProvider(window?.ethereum)
+        const signer = await provider.getSigner()
+        const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
+    
+        contract.on('RequstedRaffleWinner', () =>{
+            console.log('Requsted Raffle Winner!')
+            updateUIValues()
+            animateBalls()
+            setIsShakeMachine(true)
+            setSliderState(StateOfSlider.WAIT_A_WINNER)
+                })
+                  
+        }
 
+    const dispatch:any = useNotification()
+//Main function *Enter the raffle* which emit start of the lottery
     const {
         runContractFunction: enterTheRaffle,
         data: enterTxResponse,
+        isFetching,
+        isLoading
     } = useWeb3Contract({
         abi: abi,
         contractAddress: raffleAddress!,
@@ -51,7 +76,7 @@ const EnterTheLottery = () => {
         params: {},
     })
 
-    /* View Functions */
+/* View Functions */
 
     const { runContractFunction: getEntranceFee } = useWeb3Contract({
         abi: abi,
@@ -73,6 +98,7 @@ const EnterTheLottery = () => {
         functionName: "getRecenWinner",
         params: {},
     })
+/************************************************/
 
     async function updateUIValues() {
         const entranceFeeFromCall = (await getEntranceFee() as number)?.toString()
@@ -86,7 +112,11 @@ const EnterTheLottery = () => {
     useEffect(() => {
         if (isWeb3Enabled) {
             updateUIValues()
+            listenEventRaffleStart()
             listenEventWinner()
+            Moralis.onAccountChanged(() => {
+                setSliderState(StateOfSlider.INSERT_COIN)
+            })
         }
     }, [isWeb3Enabled])
 
@@ -99,46 +129,53 @@ const EnterTheLottery = () => {
             icon: "bell",
         })
     }
+
+//Functions which activate/desactivate animation of shake machine
     const animateBalls =() =>{
         lotteryMachineRef.current.animateBalls()
     }
 
+    const stopAnimateBalls =() =>{
+        lotteryMachineRef.current.stopShaking()
+    }
+/************************************************/
     const handleSuccess = async (tx:any) => {
-        setTransactionWait(true)
+        setSliderState(StateOfSlider.WAIT_TRANSACTION)
         try {
             await tx.wait(1)
             updateUIValues()
             handleNewNotification()
-            setIsShakeMachine(true)
-            setWaitWinner(true)
-            animateBalls()
-            setTransactionWait(false)
+            setSliderState( +numberOfPlayers > 1 ?
+                StateOfSlider.WAIT_TRANSACTION:
+                StateOfSlider.WAIT_PLAYERS
+                )
         } catch (error) {
             console.log(error)
         }
     }
 
+//HeaderProps
     const headerProps = {
         handleSuccess,
         enterTheRaffle,
-        transactionWait,
-        setInsertCoin,
-        insertCoin,
-        setWaitWinner,
-        waitWinner,
-        winnerEmited
-        
+        isLoading,
+        isFetching,
+        sliderState
     }
+/************************************************/
+
   return(
     <>
       <Header {...headerProps}/>
       <main>
+        {isWeb3Enabled &&
         <div className="absolute left-[32px]">
-            <div>Entrance fee: {entranceFee} gwei</div>
-            <div>Number of player: {numberOfPlayers}</div>
-            <div>recent winner: {recentWinner.slice(0,6) + '...' + recentWinner.slice(recentWinner.length - 4)}</div>
+        <div className="text-[20px] font-medium">Entrance fee:<span className="text-[25px] font-bold">{entranceFee}</span> wei</div>
+        <div className="text-[20px] font-medium">Number of player: <span className="text-[25px] font-bold">{numberOfPlayers}</span></div>
+        <div className="text-[20px] font-mdeium">recent winner: <span className="text-[25px] font-bold">{recentWinner.slice(0,6) + '...' + recentWinner.slice(recentWinner.length - 4)}</span></div>
         </div>
-        <div className={`${isShakeMachine ? 'animate-dance ' : ''}w-full bg-no-repeat bg-cover w-[670px] h-[700px] flex justify-center items-center mt-[150px]`}
+        }
+        <div className={`${isShakeMachine ? 'animate-dance ' : ''}w-full bg-no-repeat bg-cover w-[670px] h-[700px] flex justify-center items-center mt-[140px]`}
         style={{ backgroundImage: "url(" + lotteryMachineBg.src + ")",padding:30}}>
          <LotteryMachine ref={lotteryMachineRef}  width={605} height ={330} ballsCount={numberOfPlayers}/>
         </div>

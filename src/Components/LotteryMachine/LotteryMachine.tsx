@@ -48,6 +48,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
   // Stops the animation and aligns the balls to their final positions
   const stopShaking = () => {
     cancelAnimationFrame(animationFrameId.current);
+    animationFrameId.current = null
     const newBalls = balls.map(ball => {
       const finalPosition: { x: number, y: number } = {
         x: Math.floor(Math.random() * width * CONTENT_WIDTH),
@@ -60,6 +61,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
       };
     });
     setBalls(newBalls);
+    console.log('animation stopped')
   };
 
   // Animates the balls with a delay of 0.3 seconds
