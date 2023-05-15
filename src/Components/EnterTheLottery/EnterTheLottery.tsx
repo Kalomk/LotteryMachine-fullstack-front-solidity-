@@ -7,14 +7,15 @@ import LotteryMachine from "../LotteryMachine/LotteryMachine"
 import lotteryMachineBg from '../../assets/img/backgrounds/draw_machine.png'
 import { ethers } from "ethers"
 import WinnerModal from "../WinnerModal/WinnerModal"
-
+import useWindowSize from 'react-use/lib/useWindowSize'
+import Confetti from 'react-confetti'
 
 export enum StateOfSlider {
     INSERT_COIN ='insert',
     WAIT_PLAYERS ='wait-players',
     WAIT_TRANSACTION='wait-transaction',
-    WAIT_START_A_GAME = 'wait-start',
     WAIT_A_WINNER ='wait-a-winner',
+    WAIT_A_START = 'wait-a-start',
     PICK_A_WINNER='winner-picked',
 }
 
@@ -23,6 +24,7 @@ const EnterTheLottery = () => {
     const [isShakeMachine,setIsShakeMachine] = useState(false)
     const [modalIsOpen,setModalIsOpen] = useState(false)
     const lotteryMachineRef = useRef<any>(null)
+    const { width, height } = useWindowSize()
     const {isWeb3Enabled, chainId: chainIdHex,Moralis } = useMoralis()
     const chainId = parseInt(chainIdHex!)
     const raffleAddress = chainId in contractAddresses ? contractAddresses[chainId as unknown as keyof typeof contractAddresses][0] : null
@@ -41,11 +43,11 @@ const listenEventWinner = async  () => {
 
     contract.on('WinnerPicked', () =>{
         console.log('Winner Picked!')
+        setSliderState(StateOfSlider.PICK_A_WINNER)
+        setModalIsOpen(true)
         updateUIValues()
         stopAnimateBalls()
         setIsShakeMachine(false)
-        setSliderState(StateOfSlider.PICK_A_WINNER)
-        setModalIsOpen(true)
             })
               
     }
@@ -148,11 +150,12 @@ const listenEventRaffleStart = async  () => {
         try {
             await tx.wait(1)
             updateUIValues()
-            handleNewNotification()
-            setSliderState( +numberOfPlayers > 1 ?
-                StateOfSlider.WAIT_START_A_GAME:
+            setSliderState(+numberOfPlayers > 0 ?
+                StateOfSlider.WAIT_A_START:
                 StateOfSlider.WAIT_PLAYERS
                 )
+            console.log(+numberOfPlayers)
+            handleNewNotification()
         } catch (error) {
             console.log(error)
         }
@@ -185,6 +188,11 @@ const listenEventRaffleStart = async  () => {
         </div>
       </main>
       <WinnerModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
+      <Confetti
+      width={width}
+      height={height}
+      run={modalIsOpen}
+    />
     </>
   )
 

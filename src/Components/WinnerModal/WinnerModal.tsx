@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { Button } from '@mui/material';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -9,7 +10,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 600,
-  height:200,
+  height:300,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -23,8 +24,10 @@ interface WinnerModalProps {
 }
 
 const WinnerModal:React.FC<WinnerModalProps> = ({recentWinner,modalIsOpen,setModalIsOpen}) => {
-  const handleClose = () => setModalIsOpen(false);
-
+  const handleClose = () => {
+    window.location.reload();
+    setModalIsOpen(false)
+  };
   return (
     <div>
       <Modal
@@ -40,6 +43,7 @@ const WinnerModal:React.FC<WinnerModalProps> = ({recentWinner,modalIsOpen,setMod
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Winner is {recentWinner}
           </Typography>
+          <Button sx={{ mt: 5 }}  onClick={handleClose}>Close</Button>
         </Box>
       </Modal>
     </div>
