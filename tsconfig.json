@@ -20,6 +20,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/constants/index.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/constants/index.js", "src/**/*"],
   "exclude": ["node_modules"]
 }
