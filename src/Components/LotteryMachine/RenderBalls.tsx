@@ -1,6 +1,6 @@
 import { Ball } from './LotteryMachine';
 import Egg from '../../assets/egg/Egg'
-import useRightWidthAndHeight from '@/hooks/UseRightWidthAndHeight';
+import useRightWidthAndHeight from "@/hooks/UseRightWidthAndHeight"
 
 interface RenderBallsProps {
   balls: Ball[]
