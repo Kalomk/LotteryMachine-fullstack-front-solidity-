@@ -4,11 +4,11 @@ import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useNotification } from "web3uikit"
 import { contractAddresses, abi } from "../../constants"
 import LotteryMachine from "../LotteryMachine/LotteryMachine"
-import lotteryMachineBg from '../../assets/img/backgrounds/draw_machine.png'
+import lotteryMachineBg1 from '../../assets/img/backgrounds/draw_machine.png'
 import { ethers } from "ethers"
-import WinnerModal from "../WinnerModal/WinnerModal"
-import useWindowSize from 'react-use/lib/useWindowSize'
-import Confetti from 'react-confetti'
+import SideBar from "../SideBar/SideBar"
+import useRightWidthAndHeight from "@/hooks/UseRightWidthAndHeight"
+import WinnerModal from "@/Components/WinnerModal/WinnerModal"
 
 export enum StateOfSlider {
     INSERT_COIN ='insert',
@@ -20,15 +20,18 @@ export enum StateOfSlider {
 }
 
 
+
 const EnterTheLottery = () => {
     const [isShakeMachine,setIsShakeMachine] = useState(false)
-    const [modalIsOpen,setModalIsOpen] = useState(false)
     const lotteryMachineRef = useRef<any>(null)
-    const { width, height } = useWindowSize()
     const {isWeb3Enabled, chainId: chainIdHex,Moralis } = useMoralis()
     const chainId = parseInt(chainIdHex!)
     const raffleAddress = chainId in contractAddresses ? contractAddresses[chainId as unknown as keyof typeof contractAddresses][0] : null
     const [sliderState,setSliderState] = useState<StateOfSlider>(StateOfSlider.INSERT_COIN)
+    const [isOpenSideBar,setIsOpenSideBar] = useState(false)
+    const [modalIsOpen,setModalIsOpen] = useState(false)
+
+    const [rightWidthIC,rightHeightIC] = useRightWidthAndHeight({'1024px':[605,345], '768px':[345,202], '640px':[152,71]})
 
     //contract variables
     const [entranceFee, setEntranceFee] = useState("0")
@@ -67,6 +70,7 @@ const listenEventRaffleStart = async  () => {
                   
         }
 
+/************************************************/        
     const dispatch:any = useNotification()
 //Main function *Enter the raffle* which emit start of the lottery
     const {
@@ -176,23 +180,16 @@ const listenEventRaffleStart = async  () => {
       <Header {...headerProps}/>
       <main>
         {isWeb3Enabled &&
-        <div className="absolute left-[32px]">
-        <div className="text-[20px] font-medium">Entrance fee:<span className="text-[25px] font-bold">{entranceFee}</span> wei</div>
-        <div className="text-[20px] font-medium">Number of player: <span className="text-[25px] font-bold">{numberOfPlayers}</span></div>
-        <div className="text-[20px] font-mdeium">recent winner: <span className="text-[25px] font-bold">{recentWinner.slice(0,6) + '...' + recentWinner.slice(recentWinner.length - 4)}</span></div>
+        <div>
+        <SideBar setIsOpen={setIsOpenSideBar} recentWinner={recentWinner} numberOfPlayers={numberOfPlayers} entranceFee={entranceFee} isOpen={isOpenSideBar}/>
         </div>
         }
-        <div className={`${isShakeMachine ? 'animate-dance ' : ''}w-full bg-no-repeat bg-cover w-[670px] h-[700px] flex justify-center items-center mt-[140px]`}
-        style={{ backgroundImage: "url(" + lotteryMachineBg.src + ")",padding:30}}>
-         <LotteryMachine ref={lotteryMachineRef}  width={605} height ={330} ballsCount={numberOfPlayers}/>
+        <div className={`${isShakeMachine ? 'animate-dance ' : ''}sm:w-full bg-no-repeat bg-contain lg:w-[650px] sm:w-[409px] lg:h-[700px] sm:h-[400px] w-[150px] h-[150px] flex justify-center items-center lg:mt-[140px] mt-[-5px] md:ml-[37px] ml-[133px] lg:ml-[0] sm:ml-[22px]`}
+        style={{ backgroundImage: "url(" + lotteryMachineBg1.src + ")",padding:30}}>
+         <LotteryMachine ref={lotteryMachineRef}  width={rightWidthIC} height ={rightHeightIC} ballsCount={numberOfPlayers}/>
         </div>
       </main>
       <WinnerModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
-      <Confetti
-      width={width}
-      height={height}
-      run={modalIsOpen}
-    />
     </>
   )
 

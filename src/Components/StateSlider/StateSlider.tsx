@@ -63,37 +63,37 @@ const StateSlider: React.FC<StateSliderProps> = ({
     <>
       <Slider ref={slider} {...settings}>
         <div className='slide01'>
-            <div className="flex-row-reverse flex justify-end items-center mt-[-20px] pt-[15px] gap-[20px]">
+            <div className="flex-row-reverse flex justify-end items-center mt-[-20px] pt-[15px] lg:gap-[20px] sm:gap-[47px] gap-[15px] max-[420px]:flex-col-reverse">
             <div onClick={handleSubmit} 
                  className={`${isFetching || isLoading ? 'translate-y-[500px] opacity-0 transition-all duration-500 ' : ''}`}>
                   <Coin/>
             </div>
-            <h3 className='text-[32px] font-bold'> Please, insert Coin</h3>
+            <h3 className='lg:text-[32px] text-[15px] font-bold'> Please, insert Coin</h3>
             </div>
         </div>
         <div className='slide02'>
-            <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
-            <h3 className='animate-blinking text-[32px] text-center font-bold'>Wait more players!</h3> 
+            <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait more players!</h3> 
             </div>
         </div>
         <div className='slide03'>
-        <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
-            <h3 className='animate-blinking text-[32px] text-center font-bold'>Wait a transaction response!</h3> 
+        <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait a transaction response!</h3> 
             </div>
         </div>
         <div className='slide04'>
-        <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
-            <h3 className='animate-blinking text-[32px] text-center font-bold'>Wait a winner!</h3> 
+        <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait a winner!</h3> 
             </div>
         </div>
         <div className='slide05'>
-        <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
-            <h3 className='animate-blinking text-[32px] text-center font-bold'>Winner picked!!!</h3> 
+        <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Winner picked!!!</h3> 
             </div>
         </div>
         <div className='slide06'>
-        <div className='flex justify-center items-center pt-[20px] ml-[50px]'>
-            <h3 className='animate-blinking text-[32px] text-center font-bold'>Wait start a game!</h3> 
+        <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game!</h3> 
             </div>
         </div>
       </Slider>

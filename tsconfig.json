@@ -18,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/constants/index.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/constants/index.js", "src/Components/WinnerModal/WinnerModal.tsx"],
   "exclude": ["node_modules"]
 }

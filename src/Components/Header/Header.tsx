@@ -50,14 +50,14 @@ const Header:React.FC<HeaderProps> = ({
    
 
     return(
-        <div className="absolute w-[800px]">
-            <div className="grid grid-cols-[600px,200px] items-center justify-between m-[50px,0,50px,0]">
-              <div className="order-2"><ConnectButton moralisAuth={false}/></div>
-               <div className="order-1">
+        <div className="lg:absolute lg:max-w-[800px] w-[400px] lg:mt-[0] mt-[70px]">
+            <div className="lg:grid lg:grid-cols-[600px,200px]  items-center justify-between lg:m-[50px,0,50px,0]">
+              <div className="order-2 lg:ml-[0] ml-[50px] max-[420px]:ml-[101px]"><ConnectButton moralisAuth={false}/></div>
+               <div className="order-1 lg:mt-[0] mt-[30px] max-[420px]:mt-[77px] max-[420px]:ml-[11px]">
                  {walletAvaible ?
                  <StateSlider stateOfSliderType={sliderState} isFetching={isFetching} isLoading={isLoading} handleSubmit={handleSubmit}/>:
                 <div className="h-[150px] flex justify-center items-center">
-                     <h3 className="text-[32px] text-center font-bold">Please,connect the wallet</h3>
+                     <h3 className="lg:text-[32px] text-[15px] text-center font-bold">Please, connect the wallet</h3>
                 </div>
                  }
                 </div>

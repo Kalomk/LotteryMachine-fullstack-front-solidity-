@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useRef,useImperativeHandle } from 'react';
 import RenderBalls from './RenderBalls';
 import middleContainer from '../../assets/img/backgrounds/middle-inside.png'
@@ -6,11 +8,12 @@ export interface Ball {
   id: number;
   position: { x: number, y: number };
   rotation: number;
+  randomColorNum:number;
 }
 
 interface Props {
-  width: number;
-  height: number;
+  width: any;
+  height: any;
   ballsCount: string;
 }
 
@@ -19,7 +22,9 @@ interface Props {
 const LotteryMachine: React.ForwardRefRenderFunction<HTMLDivElement,Props> = ({ width, height, ballsCount},ref:React.Ref<HTMLDivElement>) => {
   const [balls, setBalls] = useState<Ball[]>([]);
   const animationFrameId = useRef<any>();
-  const CONTENT_WIDTH = 0.72
+  const CONTENT_WIDTH = 0.70
+
+
 
 useImperativeHandle<HTMLDivElement,any>(ref,() =>({
   animateBalls: animateBalls,
@@ -37,6 +42,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
           y: Math.floor(Math.random() * height * CONTENT_WIDTH),
         },
         rotation: Math.floor(Math.random() * 360),
+        randomColorNum: Math.floor(Math.random() * (6 - 1 + 1) + 1)
       };
       newBalls.push(ball);
     }
@@ -90,7 +96,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
   };
   // Renders the balls
   return (
-      <div className='mt-[-175px] w-full bg-no-repeat bg-cover' style={{ position: 'relative', width, height, backgroundImage: "url(" + middleContainer.src + ")" }}>
+      <div className='lg:mt-[-175px] max-[420px]:right-[-15px] sm:mt-[-90px] mt-[-38px] lg:ml-[0] sm:ml-[-31px] ml-[-38px] w-full bg-no-repeat bg-contain' style={{ position: 'relative', width, height, backgroundImage: "url(" + middleContainer.src + ")" }}>
         <RenderBalls balls={balls}/>
       </div>
   );
