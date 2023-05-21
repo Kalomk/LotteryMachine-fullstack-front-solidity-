@@ -2,19 +2,25 @@ import Slider from 'react-slick';
 import { useEffect, useRef, useState } from 'react';
 import Coin from '../Coin/Coin';
 import { StateOfSlider } from '../EnterTheLottery/EnterTheLottery';
+import Timer from '../Timer/Timer';
+import InsertCoinComponent from '../InsertCoinComponent/InsertCoinComponent';
 
 interface StateSliderProps {
   stateOfSliderType: StateOfSlider;
   handleSubmit:() => void
   isFetching:boolean;
   isLoading:boolean;
+  startTimer:boolean;
+  blockRaffle:boolean;
 }
 
 const StateSlider: React.FC<StateSliderProps> = ({
   handleSubmit,
   isFetching,
   isLoading,
-  stateOfSliderType
+  stateOfSliderType,
+  startTimer,
+  blockRaffle
 }) => {
   const settings = {
     dots:false,
@@ -63,13 +69,10 @@ const StateSlider: React.FC<StateSliderProps> = ({
     <>
       <Slider ref={slider} {...settings}>
         <div className='slide01'>
-            <div className="flex-row-reverse flex justify-end items-center mt-[-20px] pt-[15px] lg:gap-[20px] sm:gap-[47px] gap-[15px] max-[420px]:flex-col-reverse">
-            <div onClick={handleSubmit} 
-                 className={`${isFetching || isLoading ? 'translate-y-[500px] opacity-0 transition-all duration-500 ' : ''}`}>
-                  <Coin/>
-            </div>
-            <h3 className='lg:text-[32px] text-[15px] font-bold'> Please, insert Coin</h3>
-            </div>
+         {blockRaffle ? 
+         <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Sorry,wait until raffle is over</h3>:
+         <InsertCoinComponent isFetching={isFetching} isLoading ={isLoading} handleSubmit={handleSubmit}/>
+         }
         </div>
         <div className='slide02'>
             <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
@@ -93,7 +96,8 @@ const StateSlider: React.FC<StateSliderProps> = ({
         </div>
         <div className='slide06'>
         <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
-            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game!</h3> 
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game:</h3> 
+            <Timer startTimer={startTimer} interval='20'/>
             </div>
         </div>
       </Slider>

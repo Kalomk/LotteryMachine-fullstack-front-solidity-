@@ -30,6 +30,8 @@ const EnterTheLottery = () => {
     const [sliderState,setSliderState] = useState<StateOfSlider>(StateOfSlider.INSERT_COIN)
     const [isOpenSideBar,setIsOpenSideBar] = useState(false)
     const [modalIsOpen,setModalIsOpen] = useState(false)
+    const [blockRaffle,setBlockRaffle] = useState(false)
+    const [startTimer,setStartTimer] = useState(false)
 
     const [rightWidthIC,rightHeightIC] = useRightWidthAndHeight({'1024px':[605,345], '768px':[345,202], '640px':[152,71]})
 
@@ -51,6 +53,8 @@ const listenEventWinner = async  () => {
         updateUIValues()
         stopAnimateBalls()
         setIsShakeMachine(false)
+        localStorage.removeItem('blockRaffle')
+        setBlockRaffle(false)
             })
               
     }
@@ -59,13 +63,15 @@ const listenEventRaffleStart = async  () => {
         const provider = new ethers.BrowserProvider(window?.ethereum)
         const signer = await provider.getSigner()
         const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
-    
+     
         contract.on('RequstedRaffleWinner', () =>{
             console.log('Requsted Raffle Winner!')
             updateUIValues()
             animateBalls()
+            setBlockRaffle(true)
             setIsShakeMachine(true)
             setSliderState(StateOfSlider.WAIT_A_WINNER)
+            localStorage.setItem('blockRaffle','block')
                 })
                   
         }
@@ -95,6 +101,13 @@ const listenEventRaffleStart = async  () => {
         params: {},
     })
 
+    const { runContractFunction: getInterval } = useWeb3Contract({
+        abi: abi,
+        contractAddress: raffleAddress!, // specify the networkId
+        functionName: "getInterval",
+        params: {},
+    })
+
     const { runContractFunction: getPlayersNumber } = useWeb3Contract({
         abi: abi,
         contractAddress: raffleAddress!,
@@ -114,6 +127,7 @@ const listenEventRaffleStart = async  () => {
         const entranceFeeFromCall = (await getEntranceFee() as number)?.toString()
         const numPlayersFromCall = (await getPlayersNumber() as number)?.toString()
         const recentWinnerFromCall = await getRecenWinner()
+
         setEntranceFee(entranceFeeFromCall)
         setNumberOfPlayers(numPlayersFromCall)
         setRecentWinner(recentWinnerFromCall as string)
@@ -127,6 +141,10 @@ const listenEventRaffleStart = async  () => {
             Moralis.onAccountChanged(() => {
                 setSliderState(StateOfSlider.INSERT_COIN)
             })
+            const validateIndex = localStorage.getItem('blockRaffle')
+            if(validateIndex !== null){
+                setBlockRaffle(true)
+            }
         }
     }, [isWeb3Enabled])
 
@@ -158,6 +176,9 @@ const listenEventRaffleStart = async  () => {
                 StateOfSlider.WAIT_A_START:
                 StateOfSlider.WAIT_PLAYERS
                 )
+                if(+numberOfPlayers > 0){
+                    setStartTimer(true)
+                }
             console.log(+numberOfPlayers)
             handleNewNotification()
         } catch (error) {
@@ -171,7 +192,9 @@ const listenEventRaffleStart = async  () => {
         enterTheRaffle,
         isLoading,
         isFetching,
-        sliderState
+        sliderState,
+        blockRaffle,
+        startTimer
     }
 /************************************************/
 

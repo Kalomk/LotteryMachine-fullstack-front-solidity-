@@ -10,6 +10,8 @@ interface HeaderProps {
     isFetching:boolean;
     isLoading:boolean;
     sliderState:StateOfSlider;
+    blockRaffle:boolean,
+    startTimer:boolean
 }
 
 
@@ -19,7 +21,9 @@ const Header:React.FC<HeaderProps> = ({
     enterTheRaffle,
     isFetching,
     isLoading,
-    sliderState
+    sliderState,
+    blockRaffle,
+    startTimer
 }) =>{
    const {isWeb3Enabled} = useMoralis()
 
@@ -47,7 +51,8 @@ const Header:React.FC<HeaderProps> = ({
      }
 
    },[isWeb3Enabled])
-   
+
+
 
     return(
         <div className="lg:absolute lg:max-w-[800px] w-[400px] lg:mt-[0] mt-[70px] max-[420px]:mt-[277px]">
@@ -55,7 +60,8 @@ const Header:React.FC<HeaderProps> = ({
               <div className="order-2 lg:ml-[0] ml-[50px] max-[420px]:ml-[114px]"><ConnectButton moralisAuth={false}/></div>
                <div className="order-1 lg:mt-[0] mt-[30px] max-[420px]:ml-[11px]">
                  {walletAvaible ?
-                 <StateSlider stateOfSliderType={sliderState} isFetching={isFetching} isLoading={isLoading} handleSubmit={handleSubmit}/>:
+                 <StateSlider blockRaffle={blockRaffle} startTimer={startTimer} stateOfSliderType={sliderState} isFetching={isFetching} isLoading={isLoading} handleSubmit={handleSubmit}/>
+                :
                 <div className="h-[150px] flex justify-center items-center">
                      <h3 className="lg:text-[32px] text-[15px] text-center font-bold">Please, connect the wallet</h3>
                 </div>
