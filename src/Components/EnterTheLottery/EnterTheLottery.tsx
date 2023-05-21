@@ -7,7 +7,7 @@ import LotteryMachine from "../LotteryMachine/LotteryMachine"
 import lotteryMachineBg1 from '../../assets/img/backgrounds/draw_machine.png'
 import { ethers } from "ethers"
 import SideBar from "../SideBar/SideBar"
-import useRightWidthAndHeight from "@/hooks/UseRightWidthAndHeight"
+import useRightWidthAndHeight from "@/hooks/useRightWidthAndHeight"
 import WinnerModal from "@/Components/WinnerModal/WinnerModal"
 
 export enum StateOfSlider {

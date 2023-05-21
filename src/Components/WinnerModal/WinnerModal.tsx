@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Button } from '@mui/material';
-import useRightWidthAndHeight from '@/hooks/UseRightWidthAndHeight';
+import useRightWidthAndHeight from '@/hooks/useRightWidthAndHeight';
 import Confetti from 'react-confetti'
 
 interface WinnerModalProps {
