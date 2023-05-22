@@ -42,12 +42,18 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
           y: Math.floor(Math.random() * height * CONTENT_WIDTH),
         },
         rotation: Math.floor(Math.random() * 360),
-        randomColorNum: Math.floor(Math.random() * (6 - 1 + 1) + 1)
+        randomColorNum: Math.floor(Math.random() * (6 - 1 + 1) + 1),
       };
-      newBalls.push(ball);
+  
+      // Check if the ball already exists in the ball array
+      const ballExists = balls.some((existingBall) => existingBall.id === ball.id);
+  
+      if (!ballExists) {
+        newBalls.push(ball);
+      }
     }
-
-    setBalls(newBalls);
+  
+    setBalls([...balls, ...newBalls]);
   }, [width, height, ballsCount]);
 
 

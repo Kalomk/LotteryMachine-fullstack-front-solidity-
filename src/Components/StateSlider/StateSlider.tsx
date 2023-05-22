@@ -1,6 +1,5 @@
 import Slider from 'react-slick';
-import { useEffect, useRef, useState } from 'react';
-import Coin from '../Coin/Coin';
+import { useEffect, useRef} from 'react';
 import { StateOfSlider } from '../EnterTheLottery/EnterTheLottery';
 import Timer from '../Timer/Timer';
 import InsertCoinComponent from '../InsertCoinComponent/InsertCoinComponent';
@@ -70,7 +69,10 @@ const StateSlider: React.FC<StateSliderProps> = ({
       <Slider ref={slider} {...settings}>
         <div className='slide01'>
          {blockRaffle ? 
-         <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Sorry,wait until raffle is over</h3>:
+         <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
+          <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Sorry,wait until raffle is over</h3>
+         </div>
+         :
          <InsertCoinComponent isFetching={isFetching} isLoading ={isLoading} handleSubmit={handleSubmit}/>
          }
         </div>

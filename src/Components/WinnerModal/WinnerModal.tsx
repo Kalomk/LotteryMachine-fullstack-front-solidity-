@@ -10,9 +10,10 @@ interface WinnerModalProps {
     recentWinner:string;
     modalIsOpen:boolean;
     setModalIsOpen:(arg0:boolean) => void;
+    balance:string;
 }
 
-const WinnerModal:React.FC<WinnerModalProps> = ({recentWinner,modalIsOpen,setModalIsOpen}) => {
+const WinnerModal:React.FC<WinnerModalProps> = ({recentWinner,modalIsOpen,setModalIsOpen,balance}) => {
 
   const [rightWidth,rightHeight] = useRightWidthAndHeight({'1024px':[600,300], '768px':[500,200], '640px':[300,250]})
   const [rightWidthCon,rightHeightCon] = useRightWidthAndHeight({'1024px':[1400,1000], '768px':[760,900], '640px':[400,700]})
@@ -48,6 +49,9 @@ const WinnerModal:React.FC<WinnerModalProps> = ({recentWinner,modalIsOpen,setMod
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 4 }}>
             Winner is {recentWinner.slice(0,6) + '...' + recentWinner.slice(recentWinner.length - 4)}
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 4 }}>
+            {(+balance / 10**18).toLocaleString()} sends to winner
           </Typography>
           <Button sx={{ mt: 5 }}  onClick={handleClose}>Close</Button>
         </Box>

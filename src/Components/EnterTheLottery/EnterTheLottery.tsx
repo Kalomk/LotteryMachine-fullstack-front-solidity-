@@ -5,7 +5,7 @@ import { useNotification } from "web3uikit"
 import { contractAddresses, abi } from "../../constants"
 import LotteryMachine from "../LotteryMachine/LotteryMachine"
 import lotteryMachineBg1 from '../../assets/img/backgrounds/draw_machine.png'
-import { ethers } from "ethers"
+import { AddressLike, ethers } from "ethers"
 import SideBar from "../SideBar/SideBar"
 import useRightWidthAndHeight from "@/hooks/useRightWidthAndHeight"
 import WinnerModal from "@/Components/WinnerModal/WinnerModal"
@@ -32,6 +32,8 @@ const EnterTheLottery = () => {
     const [modalIsOpen,setModalIsOpen] = useState(false)
     const [blockRaffle,setBlockRaffle] = useState(false)
     const [startTimer,setStartTimer] = useState(false)
+    const [balance,setBalance] = useState('0')
+
 
     const [rightWidthIC,rightHeightIC] = useRightWidthAndHeight({'1024px':[605,345], '768px':[345,202], '640px':[152,71]})
 
@@ -40,11 +42,18 @@ const EnterTheLottery = () => {
     const [numberOfPlayers, setNumberOfPlayers] = useState("0")
     const [recentWinner, setRecentWinner] = useState("0")
 
+    const contractVariables = async () => {
+        const provider = new ethers.BrowserProvider(window?.ethereum)
+        const signer = await provider.getSigner()
+        const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
+        const balance = await provider.getBalance(raffleAddress as AddressLike)
+
+        return {contract,balance}
+    }
+
 //Event Listeners
 const listenEventWinner = async  () => {
-    const provider = new ethers.BrowserProvider(window?.ethereum)
-    const signer = await provider.getSigner()
-    const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
+    const {contract} = await contractVariables()
 
     contract.on('WinnerPicked', () =>{
         console.log('Winner Picked!')
@@ -60,9 +69,7 @@ const listenEventWinner = async  () => {
     }
 
 const listenEventRaffleStart = async  () => {
-        const provider = new ethers.BrowserProvider(window?.ethereum)
-        const signer = await provider.getSigner()
-        const contract = new ethers.Contract(raffleAddress!,abi as any,signer)
+      const {contract} = await contractVariables()
      
         contract.on('RequstedRaffleWinner', () =>{
             console.log('Requsted Raffle Winner!')
@@ -101,12 +108,6 @@ const listenEventRaffleStart = async  () => {
         params: {},
     })
 
-    const { runContractFunction: getInterval } = useWeb3Contract({
-        abi: abi,
-        contractAddress: raffleAddress!, // specify the networkId
-        functionName: "getInterval",
-        params: {},
-    })
 
     const { runContractFunction: getPlayersNumber } = useWeb3Contract({
         abi: abi,
@@ -127,10 +128,12 @@ const listenEventRaffleStart = async  () => {
         const entranceFeeFromCall = (await getEntranceFee() as number)?.toString()
         const numPlayersFromCall = (await getPlayersNumber() as number)?.toString()
         const recentWinnerFromCall = await getRecenWinner()
+        const {balance} = await contractVariables()
 
         setEntranceFee(entranceFeeFromCall)
         setNumberOfPlayers(numPlayersFromCall)
         setRecentWinner(recentWinnerFromCall as string)
+        setBalance(balance.toString())
     }
 
     useEffect(() => {
@@ -204,7 +207,7 @@ const listenEventRaffleStart = async  () => {
       <main>
         {isWeb3Enabled &&
         <div>
-        <SideBar setIsOpen={setIsOpenSideBar} recentWinner={recentWinner} numberOfPlayers={numberOfPlayers} entranceFee={entranceFee} isOpen={isOpenSideBar}/>
+        <SideBar balance={balance} setIsOpen={setIsOpenSideBar} recentWinner={recentWinner} numberOfPlayers={numberOfPlayers} entranceFee={entranceFee} isOpen={isOpenSideBar}/>
         </div>
         }
         <div className={`${isShakeMachine ? 'animate-dance ' : ''}sm:w-full bg-no-repeat bg-contain lg:w-[650px] sm:w-[409px] lg:h-[700px] sm:h-[400px] w-[150px] h-[150px] flex justify-center items-center lg:mt-[140px] mt-[-5px] md:ml-[37px] ml-[133px] lg:ml-[0] sm:ml-[22px]`}
@@ -212,7 +215,7 @@ const listenEventRaffleStart = async  () => {
          <LotteryMachine ref={lotteryMachineRef}  width={rightWidthIC} height ={rightHeightIC} ballsCount={numberOfPlayers}/>
         </div>
       </main>
-      <WinnerModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
+      <WinnerModal balance={balance} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
     </>
   )
 
