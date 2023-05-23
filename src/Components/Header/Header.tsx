@@ -1,6 +1,6 @@
 import { ConnectButton } from "web3uikit"
 import { useMoralis } from "react-moralis"
-import { useState, useEffect } from "react"
+import { useState, useEffect,useRef } from "react"
 import StateSlider from "../StateSlider/StateSlider"
 import { StateOfSlider } from "../EnterTheLottery/EnterTheLottery"
 
@@ -11,7 +11,7 @@ interface HeaderProps {
     isLoading:boolean;
     sliderState:StateOfSlider;
     blockRaffle:boolean,
-    startTimer:boolean
+    startTimer:boolean,
 }
 
 
@@ -23,7 +23,7 @@ const Header:React.FC<HeaderProps> = ({
     isLoading,
     sliderState,
     blockRaffle,
-    startTimer
+    startTimer,
 }) =>{
    const {isWeb3Enabled} = useMoralis()
 

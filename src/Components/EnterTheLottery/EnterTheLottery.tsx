@@ -32,7 +32,8 @@ const EnterTheLottery = () => {
     const [modalIsOpen,setModalIsOpen] = useState(false)
     const [blockRaffle,setBlockRaffle] = useState(false)
     const [startTimer,setStartTimer] = useState(false)
-    const [balance,setBalance] = useState('0')
+    const [accountChanged,setAccountChanged] = useState(false)
+    const isAccChanged = useRef(false);
 
 
     const [rightWidthIC,rightHeightIC] = useRightWidthAndHeight({'1024px':[605,345], '768px':[345,202], '640px':[152,71]})
@@ -41,6 +42,8 @@ const EnterTheLottery = () => {
     const [entranceFee, setEntranceFee] = useState("0")
     const [numberOfPlayers, setNumberOfPlayers] = useState("0")
     const [recentWinner, setRecentWinner] = useState("0")
+    const [balance,setBalance] = useState('0')
+    const [totalBalance,setTotalBalance] = useState('0')
 
     const contractVariables = async () => {
         const provider = new ethers.BrowserProvider(window?.ethereum)
@@ -56,13 +59,11 @@ const listenEventWinner = async  () => {
     const {contract} = await contractVariables()
 
     contract.on('WinnerPicked', () =>{
-        console.log('Winner Picked!')
         setSliderState(StateOfSlider.PICK_A_WINNER)
         setModalIsOpen(true)
         updateUIValues()
         stopAnimateBalls()
         setIsShakeMachine(false)
-        localStorage.removeItem('blockRaffle')
         setBlockRaffle(false)
             })
               
@@ -72,13 +73,13 @@ const listenEventRaffleStart = async  () => {
       const {contract} = await contractVariables()
      
         contract.on('RequstedRaffleWinner', () =>{
-            console.log('Requsted Raffle Winner!')
             updateUIValues()
             animateBalls()
             setBlockRaffle(true)
             setIsShakeMachine(true)
             setSliderState(StateOfSlider.WAIT_A_WINNER)
-            localStorage.setItem('blockRaffle','block')
+            setTotalBalance(balance)
+            console.log(totalBalance)
                 })
                   
         }
@@ -88,7 +89,6 @@ const listenEventRaffleStart = async  () => {
 //Main function *Enter the raffle* which emit start of the lottery
     const {
         runContractFunction: enterTheRaffle,
-        data: enterTxResponse,
         isFetching,
         isLoading
     } = useWeb3Contract({
@@ -122,6 +122,13 @@ const listenEventRaffleStart = async  () => {
         functionName: "getRecenWinner",
         params: {},
     })
+
+    const { runContractFunction: getRaffleState } = useWeb3Contract({
+        abi: abi,
+        contractAddress: raffleAddress!,
+        functionName: "getRaffleState",
+        params: {},
+    })
 /************************************************/
 
     async function updateUIValues() {
@@ -143,13 +150,33 @@ const listenEventRaffleStart = async  () => {
             listenEventWinner()
             Moralis.onAccountChanged(() => {
                 setSliderState(StateOfSlider.INSERT_COIN)
+                setAccountChanged(true)
+                isAccChanged.current = true
             })
             const validateIndex = localStorage.getItem('blockRaffle')
             if(validateIndex !== null){
                 setBlockRaffle(true)
             }
+    //Check if raffle state is calculating
+            const checkBlockRaffle = async () => {
+                const raffleStateFromCall = (await getRaffleState() as unknown as string)?.toString()
+                if(raffleStateFromCall === '1'){
+                    animateBalls()
+                    setBlockRaffle(true)
+                    setIsShakeMachine(true)
+                    setTotalBalance(balance)
+                }else{
+                    setBlockRaffle(false)
+                    stopAnimateBalls()
+                    setIsShakeMachine(false)
+                }
+            }
+            checkBlockRaffle()
         }
     }, [isWeb3Enabled])
+
+
+
 
     const handleNewNotification= ()=> {
         dispatch({
@@ -172,17 +199,17 @@ const listenEventRaffleStart = async  () => {
 /************************************************/
     const handleSuccess = async (tx:any) => {
         setSliderState(StateOfSlider.WAIT_TRANSACTION)
+        await updateUIValues()
         try {
             await tx.wait(1)
-            updateUIValues()
-            setSliderState(+numberOfPlayers > 0 ?
-                StateOfSlider.WAIT_A_START:
-                StateOfSlider.WAIT_PLAYERS
-                )
+            await updateUIValues()
+                setSliderState(+numberOfPlayers  > 0 ?
+                    StateOfSlider.WAIT_A_START:
+                    StateOfSlider.WAIT_PLAYERS
+                    )
                 if(+numberOfPlayers > 0){
                     setStartTimer(true)
                 }
-            console.log(+numberOfPlayers)
             handleNewNotification()
         } catch (error) {
             console.log(error)
@@ -197,7 +224,8 @@ const listenEventRaffleStart = async  () => {
         isFetching,
         sliderState,
         blockRaffle,
-        startTimer
+        startTimer,
+        setAccountChanged
     }
 /************************************************/
 
@@ -215,7 +243,7 @@ const listenEventRaffleStart = async  () => {
          <LotteryMachine ref={lotteryMachineRef}  width={rightWidthIC} height ={rightHeightIC} ballsCount={numberOfPlayers}/>
         </div>
       </main>
-      <WinnerModal balance={balance} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
+      <WinnerModal balance={totalBalance} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
     </>
   )
 
