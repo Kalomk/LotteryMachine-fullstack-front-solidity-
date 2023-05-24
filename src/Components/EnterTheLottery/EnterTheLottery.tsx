@@ -29,8 +29,7 @@ const EnterTheLottery = () => {
     const [modalIsOpen,setModalIsOpen] = useState(false)
     const [blockRaffle,setBlockRaffle] = useState(false)
     const [startTimer,setStartTimer] = useState(false)
-    const [accountChanged,setAccountChanged] = useState(false)
-    const isAccChanged = useRef(false);
+    const [accountChanged,setAccountChanged] = useState(true)
     const startlotteryMachineRef = useRef<any>(null)
 
 
@@ -98,9 +97,11 @@ const listenEventWinner = async  () => {
     const listenRaffleEnter = async  () => {
         const {contract} = await contractVariables()
    
-       contract.on('RaffleEnter', () =>{
-        checkNumberofPlayers()
-                   })
+       if(!accountChanged){
+        contract.on('RaffleEnter', () =>{
+            checkNumberofPlayers()
+                       })
+       }
 
            }
           
@@ -169,7 +170,6 @@ const listenEventWinner = async  () => {
                 setSliderState(StateOfSlider.INSERT_COIN)
                 setAccountChanged(true)
                 updateUIValues()
-                isAccChanged.current = true
             })
 
         listenEventWinner()
@@ -192,7 +192,7 @@ const listenEventWinner = async  () => {
         }
         checkBlockRaffle()
         }
-    }, [isWeb3Enabled])
+    }, [isWeb3Enabled,accountChanged])
 
     //Functions which activate/desactivate animation of shake machine
     const animateBalls =() =>{
@@ -218,6 +218,7 @@ const listenEventWinner = async  () => {
     const handleSuccess = async (tx:any) => {
         setSliderState(StateOfSlider.WAIT_TRANSACTION)
         updateUIValues()
+        setAccountChanged(false)
         try {
             await tx.wait(1)
             handleNewNotification()
