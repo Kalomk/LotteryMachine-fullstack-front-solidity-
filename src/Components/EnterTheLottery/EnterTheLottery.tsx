@@ -220,7 +220,6 @@ const listenEventWinner = async  () => {
         updateUIValues()
         try {
             await tx.wait(1)
-            checkNumberofPlayers()
             handleNewNotification()
         } catch (error) {
             console.log(error)
