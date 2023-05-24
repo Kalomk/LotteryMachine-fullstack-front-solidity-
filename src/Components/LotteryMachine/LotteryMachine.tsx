@@ -27,7 +27,7 @@ const LotteryMachine: React.ForwardRefRenderFunction<HTMLDivElement,Props> = ({ 
 
 
 useImperativeHandle<HTMLDivElement,any>(ref,() =>({
-  animateBalls: animateBalls,
+  animateBalls,
   stopShaking
 }))
 
