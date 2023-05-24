@@ -39,7 +39,6 @@ const EnterTheLottery = () => {
     const [numberOfPlayers, setNumberOfPlayers] = useState("0")
     const [recentWinner, setRecentWinner] = useState("0")
     const [balance,setBalance] = useState('0')
-    const [totalBalance,setTotalBalance] = useState('0')
 
 
     const contractVariables = async () => {
@@ -49,6 +48,19 @@ const EnterTheLottery = () => {
         const balance = await provider.getBalance(raffleAddress as AddressLike)
 
         return {contract,balance}
+    }
+
+    const checkNumberofPlayers = async () => {
+        const numPlayersFromCall = (await getPlayersNumber() as number)?.toString()
+           setSliderState(+numPlayersFromCall > 1 ?
+               StateOfSlider.WAIT_A_START:
+               StateOfSlider.WAIT_PLAYERS
+               )
+           if(+numPlayersFromCall > 1){
+               setStartTimer(true)
+           }
+           updateUIValues()
+           console.log(numPlayersFromCall)
     }
 /************************************************/        
     const dispatch:any = useNotification()
@@ -86,31 +98,21 @@ const listenEventWinner = async  () => {
     const listenRaffleEnter = async  () => {
         const {contract} = await contractVariables()
    
-       contract.on('RaffleEnter', async() =>{
-        const numPlayersFromCall = (await getPlayersNumber() as number)?.toString()
-           setSliderState(+numPlayersFromCall > 1 ?
-               StateOfSlider.WAIT_A_START:
-               StateOfSlider.WAIT_PLAYERS
-               )
-           if(+numPlayersFromCall > 1){
-               setStartTimer(true)
-           }
-           updateUIValues()
-           console.log(numPlayersFromCall)
+       contract.on('RaffleEnter', () =>{
+        checkNumberofPlayers()
                    })
 
            }
           
    
    const listenEventRaffleStart = async  () => {
-         const {contract,balance} = await contractVariables()
+         const {contract} = await contractVariables()
            contract.on('RequstedRaffleWinner', () =>{
                updateUIValues()
                animateBalls()
                setBlockRaffle(true)
                setIsShakeMachine(true)
                setSliderState(StateOfSlider.WAIT_A_WINNER)
-               setTotalBalance(balance.toString())
                    })
                      
            }
@@ -182,7 +184,6 @@ const listenEventWinner = async  () => {
                 updateUIValues()
                 setBlockRaffle(true)
                 setIsShakeMachine(true)
-                setTotalBalance(balance)
             }else{
                 setBlockRaffle(false)
                 stopAnimateBalls()
@@ -219,7 +220,7 @@ const listenEventWinner = async  () => {
         updateUIValues()
         try {
             await tx.wait(1)
-            updateUIValues()
+            checkNumberofPlayers()
             handleNewNotification()
         } catch (error) {
             console.log(error)
@@ -252,7 +253,7 @@ const listenEventWinner = async  () => {
         }
       <StartLotteryMachine ref={startlotteryMachineRef} isShakeMachine={isShakeMachine} numberOfPlayers={numberOfPlayers}/>
       </main>
-      <WinnerModal balance={totalBalance} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
+      <WinnerModal balance={balance} modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} recentWinner={recentWinner}/>
     </>
   )
 
