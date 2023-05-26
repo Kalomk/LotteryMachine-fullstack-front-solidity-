@@ -34,7 +34,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
   // Generate initial ball positions and rotations
   useEffect(() => {
     const newBalls: Ball[] = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < +ballsCount; i++) {
       const ball: Ball = {
         id: i,
         position: {
