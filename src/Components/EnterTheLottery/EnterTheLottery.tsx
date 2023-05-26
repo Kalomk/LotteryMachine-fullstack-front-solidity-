@@ -93,7 +93,6 @@ const EnterTheLottery = () => {
       updateUIValues();
       if (!accountChanged) {
         checkNumberofPlayers();
-        listenEventWinner()
       }
     });
   };
@@ -106,6 +105,7 @@ const EnterTheLottery = () => {
       setBlockRaffle(true);
       setIsShakeMachine(true);
       setSliderState(StateOfSlider.WAIT_A_WINNER);
+      listenEventWinner()
     });
   };
 
