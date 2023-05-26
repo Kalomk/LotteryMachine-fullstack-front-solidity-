@@ -160,7 +160,9 @@ const EnterTheLottery = () => {
         updateUIValues();
       });
 
-      listenRaffleEnter().then(() => listenEventRaffleStart().then(() => listenEventWinner()));
+      listenRaffleEnter().then(() =>
+        updateUIValues().then(() => listenEventRaffleStart().then(() => listenEventWinner()))
+      );
 
       //Check if raffle state is calculating
       const checkBlockRaffle = async () => {
@@ -248,7 +250,7 @@ const EnterTheLottery = () => {
         />
       </main>
       <WinnerModal
-        balance={balance}
+        balance={totalBalance}
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
         recentWinner={recentWinner}
