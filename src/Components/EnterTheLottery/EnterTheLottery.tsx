@@ -93,6 +93,7 @@ const EnterTheLottery = () => {
       updateUIValues();
       if (!accountChanged) {
         checkNumberofPlayers();
+        listenEventWinner()
       }
     });
   };
@@ -161,7 +162,7 @@ const EnterTheLottery = () => {
       });
 
       listenRaffleEnter().then(() =>
-        updateUIValues().then(() => listenEventRaffleStart().then(() => listenEventWinner()))
+        updateUIValues().then(() => listenEventRaffleStart())
       );
 
       //Check if raffle state is calculating

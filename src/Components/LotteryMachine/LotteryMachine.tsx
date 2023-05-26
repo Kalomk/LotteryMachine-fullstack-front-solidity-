@@ -54,7 +54,7 @@ useImperativeHandle<HTMLDivElement,any>(ref,() =>({
     }
   
     setBalls([...balls, ...newBalls]);
-  }, [width, height, ballsCount]);
+  }, [width, height, ballsCount,balls]);
 
 
   // Stops the animation and aligns the balls to their final positions
