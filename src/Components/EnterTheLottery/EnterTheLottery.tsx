@@ -161,9 +161,7 @@ const EnterTheLottery = () => {
         updateUIValues();
       });
 
-      listenRaffleEnter().then(() =>
-        updateUIValues().then(() => listenEventRaffleStart())
-      );
+      listenRaffleEnter().then(() => listenEventRaffleStart());
 
       //Check if raffle state is calculating
       const checkBlockRaffle = async () => {

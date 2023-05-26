@@ -95,7 +95,7 @@ const StateSlider: React.FC<StateSliderProps> = ({
         </div>
         <div className='slide06'>
         <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
-            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game:</h3> 
+            <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game</h3> 
             </div>
         </div>
       </Slider>
