@@ -1,7 +1,6 @@
 import Slider from 'react-slick';
 import { useEffect, useRef} from 'react';
 import { StateOfSlider } from '../EnterTheLottery/EnterTheLottery';
-import Timer from '../Timer/Timer';
 import InsertCoinComponent from '../InsertCoinComponent/InsertCoinComponent';
 
 interface StateSliderProps {
@@ -9,7 +8,6 @@ interface StateSliderProps {
   handleSubmit:() => void
   isFetching:boolean;
   isLoading:boolean;
-  startTimer:boolean;
   blockRaffle:boolean;
 }
 
@@ -18,7 +16,6 @@ const StateSlider: React.FC<StateSliderProps> = ({
   isFetching,
   isLoading,
   stateOfSliderType,
-  startTimer,
   blockRaffle
 }) => {
   const settings = {
@@ -99,7 +96,6 @@ const StateSlider: React.FC<StateSliderProps> = ({
         <div className='slide06'>
         <div className='flex justify-center items-center pt-[20px] ml-[50px] max-[420px]:ml-[6px]'>
             <h3 className='animate-blinking lg:text-[32px] text-[15px]  text-center font-bold'>Wait start a game:</h3> 
-            <Timer startTimer={startTimer} interval='20'/>
             </div>
         </div>
       </Slider>
