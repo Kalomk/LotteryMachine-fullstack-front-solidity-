@@ -37,6 +37,7 @@ const EnterTheLottery = () => {
   const [numberOfPlayers, setNumberOfPlayers] = useState('0');
   const [recentWinner, setRecentWinner] = useState('0');
   const [balance, setBalance] = useState('0');
+  const [totalBalance, setTotalBalance] = useState('0');
 
   const contractVariables = async () => {
     const provider = new ethers.BrowserProvider(window?.ethereum);
@@ -72,7 +73,7 @@ const EnterTheLottery = () => {
 
   //Event Listeners
   const listenEventWinner = async () => {
-    const { contract } = await contractVariables();
+    const { contract, balance } = await contractVariables();
 
     contract.on('WinnerPicked', () => {
       setSliderState(StateOfSlider.PICK_A_WINNER);
@@ -81,6 +82,7 @@ const EnterTheLottery = () => {
       stopAnimateBalls();
       setIsShakeMachine(false);
       setBlockRaffle(false);
+      setTotalBalance(balance.toString());
     });
   };
 
@@ -158,8 +160,7 @@ const EnterTheLottery = () => {
         updateUIValues();
       });
 
-      listenEventWinner();
-      listenRaffleEnter().then(() => listenEventRaffleStart());
+      listenRaffleEnter().then(() => listenEventRaffleStart().then(() => listenEventWinner()));
 
       //Check if raffle state is calculating
       const checkBlockRaffle = async () => {
