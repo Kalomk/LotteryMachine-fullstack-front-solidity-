@@ -105,7 +105,8 @@ const EnterTheLottery = () => {
       setBlockRaffle(true);
       setIsShakeMachine(true);
       setSliderState(StateOfSlider.WAIT_A_WINNER);
-      listenEventWinner()
+      //Listen winner event
+      listenEventWinner();
     });
   };
 
@@ -171,6 +172,7 @@ const EnterTheLottery = () => {
           updateUIValues();
           setBlockRaffle(true);
           setIsShakeMachine(true);
+          listenEventWinner();
         } else {
           setBlockRaffle(false);
           stopAnimateBalls();
