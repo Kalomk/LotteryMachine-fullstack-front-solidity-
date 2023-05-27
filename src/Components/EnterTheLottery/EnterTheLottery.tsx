@@ -209,6 +209,7 @@ const EnterTheLottery = () => {
     setAccountChanged(false);
     try {
       await tx.wait(1);
+      updateUIValues();
       handleNewNotification();
     } catch (error) {
       console.log(error);
