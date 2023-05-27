@@ -91,6 +91,7 @@ const EnterTheLottery = () => {
 
     contract.on('RaffleEnter', () => {
       updateUIValues();
+      listenEventRaffleStart();
       if (!accountChanged) {
         checkNumberofPlayers();
       }
@@ -162,7 +163,8 @@ const EnterTheLottery = () => {
         updateUIValues();
       });
 
-      listenRaffleEnter().then(() => listenEventRaffleStart());
+      //listen raffle enter
+      listenRaffleEnter();
 
       //Check if raffle state is calculating
       const checkBlockRaffle = async () => {
